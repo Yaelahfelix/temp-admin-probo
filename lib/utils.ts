@@ -57,3 +57,17 @@ export function generateEmbedUrl(url: string) {
   }
   return url;
 }
+
+export function trimDataPelanggan(pelangganObj: {
+  nosamb: string;
+  nama: string;
+  alamat: string;
+  aktif: number;
+}) {
+  return {
+    nosamb: pelangganObj.nosamb.trim(),
+    nama: pelangganObj.nama.trim(),
+    alamat: pelangganObj.alamat.trim(),
+    aktif: pelangganObj.aktif,
+  };
+}

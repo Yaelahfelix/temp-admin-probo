@@ -331,7 +331,7 @@ export default function PengaduanSelesaiForm() {
                           <FormLabel>Tanggal Penyelesaian</FormLabel>
                           <FormControl>
                             <DateTimePicker24h
-                              value={new Date(field.value)}
+                              value={field.value}
                               onChange={field.onChange}
                             />
                           </FormControl>

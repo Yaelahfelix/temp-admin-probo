@@ -274,7 +274,7 @@ export default function PengaduanForm({ pengaduan }: { pengaduan?: any }) {
                 <FormLabel>Tanggal Aduan</FormLabel>
                 <FormControl>
                   <DateTimePicker24h
-                    value={new Date(field.value) || new Date()}
+                    value={field.value}
                     onChange={field.onChange}
                   />
                 </FormControl>
