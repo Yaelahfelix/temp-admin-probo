@@ -6,11 +6,19 @@ import db from "@/lib/db";
 import { MobileUser } from "@/types/mobile";
 import { encodeHexLowerCase } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
+import { verifyApiSecret } from "@/lib/verifyApiSecret";
 
+// Helper function untuk mendeteksi apakah input adalah email
+function isEmail(value: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(value);
+}
+
+// Function untuk get user berdasarkan email
 async function getUserFromEmail(email: string): Promise<MobileUser | null> {
   const [data]: any = await db.query(
-    "SELECT a.id, a.email,a.nama,a.image,a.password, a.alamat FROM web_public_user a WHERE a.email = ?",
-    email
+    "SELECT a.id, a.email, a.nama, a.image, a.password, a.alamat, a.nomor_telepon FROM web_public_user a WHERE a.email = ?",
+    [email]
   );
   if (data.length === 0) {
     return null;
@@ -21,10 +29,46 @@ async function getUserFromEmail(email: string): Promise<MobileUser | null> {
     email: data[0].email,
     nama: data[0].nama,
     image: data[0].image,
+    nomor_telepon: data[0].nomor_telepon,
     alamat: data[0].alamat,
     password: data[0].password,
   };
   return user;
+}
+
+// Function untuk get user berdasarkan nomor telepon
+async function getUserFromPhone(
+  nomor_telepon: string
+): Promise<MobileUser | null> {
+  const [data]: any = await db.query(
+    "SELECT a.id, a.email, a.nama, a.image, a.password, a.alamat, a.nomor_telepon FROM web_public_user a WHERE a.nomor_telepon = ?",
+    [nomor_telepon]
+  );
+  console.log(nomor_telepon);
+  if (data.length === 0) {
+    return null;
+  }
+
+  const user: MobileUser = {
+    id: data[0].id,
+    email: data[0].email,
+    nama: data[0].nama,
+    image: data[0].image,
+    nomor_telepon: data[0].nomor_telepon,
+    alamat: data[0].alamat,
+    password: data[0].password,
+  };
+  return user;
+}
+
+async function getUserFromEmailOrPhone(
+  emailOrPhone: string
+): Promise<MobileUser | null> {
+  if (isEmail(emailOrPhone)) {
+    return await getUserFromEmail(emailOrPhone);
+  } else {
+    return await getUserFromPhone(emailOrPhone);
+  }
 }
 
 export async function createSession(
@@ -46,27 +90,32 @@ export async function createSession(
 
 export async function POST(req: NextRequest) {
   try {
+    if (!verifyApiSecret(req.headers)) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
     const body = await req.json();
-    const { email, password } = body;
 
-    if (typeof email !== "string" || typeof password !== "string") {
+    const { email, nomor_telepon, password } = body;
+    const emailOrPhone = email || nomor_telepon;
+
+    if (typeof emailOrPhone !== "string" || typeof password !== "string") {
       return NextResponse.json(
         { message: "Invalid or missing fields" },
         { status: 400 }
       );
     }
 
-    if (email === "" || password === "") {
+    if (emailOrPhone === "" || password === "") {
       return NextResponse.json(
-        { message: "Please enter your email and password." },
+        { message: "Please enter your email/nomor_telepon and password." },
         { status: 400 }
       );
     }
 
-    const user = await getUserFromEmail(email);
+    const user = await getUserFromEmailOrPhone(emailOrPhone);
     if (!user) {
       return NextResponse.json(
-        { message: "Account does not exist" },
+        { message: "Email/nomor telepon atau password salah" },
         { status: 404 }
       );
     }
@@ -74,7 +123,7 @@ export async function POST(req: NextRequest) {
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return NextResponse.json(
-        { message: "Invalid password" },
+        { message: "Email/nomor telepon atau password salah" },
         { status: 401 }
       );
     }
@@ -90,6 +139,7 @@ export async function POST(req: NextRequest) {
         id: user.id,
         email: user.email,
         name: user.nama,
+        nomor_telepon: user.nomor_telepon,
       },
     });
   } catch (error) {

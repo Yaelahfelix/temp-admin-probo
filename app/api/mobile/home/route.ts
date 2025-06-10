@@ -4,9 +4,14 @@ import { validateSessionToken } from "@/lib/session";
 import type { RowDataPacket } from "mysql2";
 import { trimDataPelanggan } from "@/lib/utils";
 import db from "@/lib/db";
+import { verifyApiSecret } from "@/lib/verifyApiSecret";
+import { getUserBySession } from "../utlis";
 
 export async function GET(request: NextRequest) {
   try {
+    if (!verifyApiSecret(request.headers)) {
+      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    }
     const token = request.headers.get("Authorization")?.replace("Bearer ", "");
 
     if (!token) {
@@ -16,9 +21,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await validateSessionToken(token);
+    const user = await getUserBySession(token);
 
-    if (!session.session || !session.user) {
+    if (!user) {
       return NextResponse.json(
         { success: false, message: "Invalid or expired session" },
         { status: 401 }
@@ -28,16 +33,15 @@ export async function GET(request: NextRequest) {
     const [pelangganRes] = await db.query<RowDataPacket[]>(
       `
       SELECT 
-        webnomor.nosamb, 
+        webnomor.nomor_pelanggan as no_pelanggan, 
         webnomor.id_user, 
         pelanggan.nama, 
-        pelanggan.alamat, 
-        pelanggan.aktif
+        pelanggan.alamat 
       FROM web_nomor_pelanggan AS webnomor
-      INNER JOIN pelanggan ON pelanggan.nosamb = webnomor.nosamb
+      INNER JOIN pelanggan ON pelanggan.no_pelanggan = webnomor.nomor_pelanggan
       WHERE webnomor.id_user = ?
       `,
-      [session.user.id]
+      [user.id]
     );
 
     const finalResData = pelangganRes.map((p: any) => ({

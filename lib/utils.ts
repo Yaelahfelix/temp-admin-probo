@@ -59,15 +59,13 @@ export function generateEmbedUrl(url: string) {
 }
 
 export function trimDataPelanggan(pelangganObj: {
-  nosamb: string;
+  no_pelanggan: string;
   nama: string;
   alamat: string;
-  aktif: number;
 }) {
   return {
-    nosamb: pelangganObj.nosamb.trim(),
+    no_pelanggan: pelangganObj.no_pelanggan.trim(),
     nama: pelangganObj.nama.trim(),
     alamat: pelangganObj.alamat.trim(),
-    aktif: pelangganObj.aktif,
   };
 }
