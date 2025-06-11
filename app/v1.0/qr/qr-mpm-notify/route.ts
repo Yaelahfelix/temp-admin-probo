@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const base64Key = process.env.BASE64_PUBLIC_KEY!;
     console.log("Base64: ", base64Key);
 
-    const publicKey = Buffer.from(base64Key, "base64");
+    const publicKey = Buffer.from(base64Key, "base64").toString("utf-8");
 
     console.log("Public Key:", publicKey);
 
