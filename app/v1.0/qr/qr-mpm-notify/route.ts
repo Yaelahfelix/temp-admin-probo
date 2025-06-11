@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     console.log(body);
-    const url = "/sandbox_prod/url_listener.php/v1.0/qr/qr-mpm-notify";
+    const url = "/v1.0/qr/qr-mpm-notify";
     const httpMethod = "POST";
 
     const payload = JSON.stringify(body);
@@ -53,15 +53,15 @@ export async function POST(request: NextRequest) {
       .verify(publicKey, Buffer.from(signature, "base64"));
     console.log(verify);
 
-    // if (!verify) {
-    //   return NextResponse.json(
-    //     {
-    //       responseCode: "4015200",
-    //       responseMessage: "Invalid signature",
-    //     },
-    //     { status: 401 }
-    //   );
-    // }
+    if (!verify) {
+      return NextResponse.json(
+        {
+          responseCode: "4015200",
+          responseMessage: "Invalid signature",
+        },
+        { status: 401 }
+      );
+    }
 
     try {
       const [rows] = await db.execute<RowDataPacket[]>(
