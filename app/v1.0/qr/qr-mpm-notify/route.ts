@@ -7,6 +7,7 @@ import path from "path";
 export async function POST(request: NextRequest) {
   try {
     const headers = request.headers;
+    console.log(headers);
     const timestamp = headers.get("X-Timestamp");
     const signature = headers.get("X-Signature");
     const partnerId = headers.get("X-Partner-ID");
@@ -26,6 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log(body);
     const url = "/sandbox_prod/url_listener.php/v1.0/qr/qr-mpm-notify";
     const httpMethod = "POST";
 
