@@ -8,6 +8,22 @@ import db from "@/lib/db";
 import { RowDataPacket } from "mysql2";
 import { format } from "date-fns";
 
+interface QRIS {
+  additionalInfo: AdditionalInfo;
+  partnerReferenceNo: string;
+  qrContent: null;
+  qrUrl: string;
+  responseCode: string;
+  responseMessage: string;
+  terminalId: string;
+}
+
+interface AdditionalInfo {
+  contractId: string;
+  expiredAt: string;
+  isStatic: boolean;
+}
+
 export function generateInvoiceNumber(): string {
   const now = new Date();
   const year = now.getFullYear().toString().slice(-2);
@@ -202,42 +218,44 @@ export async function POST(request: NextRequest) {
       body: minifiedPayload,
     });
 
-    const data = await response.json();
+    const data: QRIS = await response.json();
 
     if (response.ok && data) {
       try {
         const insertQuery = `
-          INSERT INTO payment_transaction (
-            transaction_id,
-            order_id,
-            no_samb,
-            detail_tagihan_array,
-            total_biaya,
-            payment_type,
-            bank_name,
-            transaction_status,
-            transaction_time,
-            settlement_time,
-            is_double,
-            expired_at,
-            user_id
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `;
+  INSERT INTO payment_transaction (
+    contract_id,
+    no_invoice,
+    no_pelanggan,
+    detail_tagihan_array,
+    total_biaya,
+    payment_type,
+    bank_name,
+    transaction_status,
+    transaction_time,
+    settlement_time,
+    is_double,
+    expired_at,
+    user_id,
+    qris_url
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
 
         const insertValues = [
-          "",
-          invoice,
+          data.additionalInfo.contractId,
+          data.partnerReferenceNo,
           no_pelanggan,
           JSON.stringify(tagihanBlmLunas),
           amount,
           "qris",
-          null,
+          null, // bank_name
           "pending",
           timestamp,
-          null,
-          0,
+          null, // settlement_time
+          0, // is_double
           expired_at,
           user_id,
+          data.qrUrl,
         ];
 
         await db.query(insertQuery, insertValues);
