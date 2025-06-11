@@ -11,6 +11,10 @@ export async function POST(request: NextRequest) {
     const signature = headers.get("X-Signature");
     const partnerId = headers.get("X-Partner-ID");
 
+    console.log("Timestamp: ", timestamp);
+    console.log("Signature: ", signature);
+    console.log("partnet ID: ", partnerId);
+
     if (!timestamp || !signature || !partnerId) {
       return NextResponse.json(
         {
@@ -35,13 +39,17 @@ export async function POST(request: NextRequest) {
     const stringToSign = stringToSignArr.join(":");
 
     const base64Key = process.env.BASE64_PUBLIC_KEY!;
+    console.log("Base64: ", base64Key);
 
     const publicKey = Buffer.from(base64Key, "base64");
+
+    console.log("Public Key:", publicKey);
 
     const verify = crypto
       .createVerify("sha256")
       .update(stringToSign)
       .verify(publicKey, Buffer.from(signature, "base64"));
+    console.log(verify);
 
     if (!verify) {
       return NextResponse.json(
