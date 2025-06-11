@@ -132,24 +132,9 @@ export async function POST(request: NextRequest) {
     const externalId = invoice;
     const channelId = "QRIS";
 
-    const privateKeyPath = path.join(process.cwd(), "keys", "private-key.pem");
+    const base64Key = process.env.BASE64_PRIVATE_KEY!;
 
-    let privateKey;
-    try {
-      privateKey = fs.readFileSync(privateKeyPath, "utf8");
-
-      if (!privateKey.includes("-----BEGIN RSA PRIVATE KEY-----")) {
-        throw new Error(
-          "File harus berisi RSA private key dengan format yang benar"
-        );
-      }
-    } catch (error) {
-      console.error("Error reading RSA private key file:", error);
-      return NextResponse.json(
-        { message: "RSA private key file not found or invalid format" },
-        { status: 500 }
-      );
-    }
+    const privateKey = Buffer.from(base64Key, "base64");
 
     // Validasi environment variables
     if (!partnerId || !externalId || !channelId) {
