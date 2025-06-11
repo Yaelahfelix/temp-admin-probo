@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
     const base64Key = process.env.BASE64_PUBLIC_KEY!;
     console.log("Base64: ", base64Key);
 
-    const publicKey = Buffer.from(base64Key, "base64").toString("utf-8");
+    const publicKey = Buffer.from(base64Key, "base64");
 
     console.log("Public Key:", publicKey);
     console.log(stringToSign);
@@ -53,15 +53,15 @@ export async function POST(request: NextRequest) {
       .verify(publicKey, Buffer.from(signature, "base64"));
     console.log(verify);
 
-    if (!verify) {
-      return NextResponse.json(
-        {
-          responseCode: "4015200",
-          responseMessage: "Invalid signature",
-        },
-        { status: 401 }
-      );
-    }
+    // if (!verify) {
+    //   return NextResponse.json(
+    //     {
+    //       responseCode: "4015200",
+    //       responseMessage: "Invalid signature",
+    //     },
+    //     { status: 401 }
+    //   );
+    // }
 
     try {
       const [rows] = await db.execute<RowDataPacket[]>(
