@@ -34,10 +34,10 @@ export async function POST(request: NextRequest) {
     ];
     const stringToSign = stringToSignArr.join(":");
 
-    const publicKey = fs.readFileSync(
-      path.join(process.cwd(), "keys", "public-key.pem"),
-      "utf8"
-    );
+    const base64Key = process.env.PUBLIC_KEY_BASE64!;
+
+    const publicKey = Buffer.from(base64Key, "base64").toString("utf8");
+
     const verify = crypto
       .createVerify("sha256")
       .update(stringToSign)
