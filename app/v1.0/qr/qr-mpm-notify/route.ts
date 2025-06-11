@@ -105,6 +105,7 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error: any) {
+    console.log(error);
     return NextResponse.json(
       {
         responseCode: "5005200",
