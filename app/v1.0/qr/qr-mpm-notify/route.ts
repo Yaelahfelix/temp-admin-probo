@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     ];
     const stringToSign = stringToSignArr.join(":");
 
-    const base64Key = process.env.PUBLIC_KEY_BASE64!;
+    const base64Key = process.env.BASE64_PUBLIC_KEY!;
 
     const publicKey = Buffer.from(base64Key, "base64").toString("utf8");
 
