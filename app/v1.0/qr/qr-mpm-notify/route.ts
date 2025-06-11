@@ -3,6 +3,7 @@ import crypto from "crypto";
 import fs from "fs";
 import db from "@/lib/db";
 import { RowDataPacket } from "mysql2";
+import path from "path";
 export async function POST(request: NextRequest) {
   try {
     const headers = request.headers;
@@ -21,19 +22,22 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const path = "/sandbox_prod/url_listener.php/v1.0/qr/qr-mpm-notify";
+    const url = "/sandbox_prod/url_listener.php/v1.0/qr/qr-mpm-notify";
     const httpMethod = "POST";
 
     const payload = JSON.stringify(body);
     const stringToSignArr = [
       httpMethod,
-      path,
+      url,
       crypto.createHash("sha256").update(payload).digest("hex").toLowerCase(),
       timestamp,
     ];
     const stringToSign = stringToSignArr.join(":");
 
-    const publicKey = fs.readFileSync("./public-key.pem");
+    const publicKey = fs.readFileSync(
+      path.join(process.cwd(), "keys", "public-key.pem"),
+      "utf8"
+    );
     const verify = crypto
       .createVerify("sha256")
       .update(stringToSign)

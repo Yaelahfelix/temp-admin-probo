@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
     const externalId = invoice;
     const channelId = "QRIS";
 
-    const privateKeyPath = path.join(process.cwd(), "./private-key.pem");
+    const privateKeyPath = path.join(process.cwd(), "keys", "private-key.pem");
 
     let privateKey;
     try {
