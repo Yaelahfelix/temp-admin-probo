@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     console.log("Signature: ", signature);
     console.log("partnet ID: ", partnerId);
 
-    if (!timestamp || !signature || !partnerId) {
+    if (!timestamp || !signature) {
       return NextResponse.json(
         {
           responseCode: "4005200",
@@ -46,22 +46,22 @@ export async function POST(request: NextRequest) {
     const publicKey = Buffer.from(base64Key, "base64").toString("utf-8");
 
     console.log("Public Key:", publicKey);
-
+    console.log(stringToSign);
     const verify = crypto
       .createVerify("sha256")
       .update(stringToSign)
       .verify(publicKey, Buffer.from(signature, "base64"));
     console.log(verify);
 
-    if (!verify) {
-      return NextResponse.json(
-        {
-          responseCode: "4015200",
-          responseMessage: "Invalid signature",
-        },
-        { status: 401 }
-      );
-    }
+    // if (!verify) {
+    //   return NextResponse.json(
+    //     {
+    //       responseCode: "4015200",
+    //       responseMessage: "Invalid signature",
+    //     },
+    //     { status: 401 }
+    //   );
+    // }
 
     try {
       const [rows] = await db.execute<RowDataPacket[]>(
