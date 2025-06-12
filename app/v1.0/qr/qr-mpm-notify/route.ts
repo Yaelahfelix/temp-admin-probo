@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
     const url = "/v1.0/qr/qr-mpm-notify";
     const httpMethod = "POST";
 
+    console.log(body);
     const payload = JSON.stringify(body);
     const stringToSignArr = [
       httpMethod,
@@ -39,10 +40,11 @@ export async function POST(request: NextRequest) {
     ];
     const stringToSign = stringToSignArr.join(":");
 
+    console.log(stringToSign);
     const base64Key = process.env.BASE64_PUBLIC_KEY!;
-    console.log("Base64: ", base64Key);
+    console.log("Base64 Public Key: ", base64Key);
 
-    const publicKey = Buffer.from(base64Key, "base64");
+    const publicKey = Buffer.from(base64Key, "base64").toString("utf-8");
 
     console.log("Public Key:", publicKey);
     console.log(stringToSign);
@@ -50,7 +52,7 @@ export async function POST(request: NextRequest) {
       .createVerify("sha256")
       .update(stringToSign)
       .verify(publicKey, Buffer.from(signature, "base64"));
-    console.log(verify);
+    console.log("Hasil verify:", verify);
 
     if (!verify) {
       return NextResponse.json(
