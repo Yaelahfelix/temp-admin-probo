@@ -4,6 +4,13 @@ import fs from "fs";
 import db from "@/lib/db";
 import { RowDataPacket } from "mysql2";
 import path from "path";
+function base64ToPEMPublicKey(base64Key: string) {
+  const decoded = Buffer.from(base64Key, "base64").toString("utf8");
+  const cleaned = decoded
+    .replace(/-----(BEGIN|END)( RSA)? PUBLIC KEY-----/g, "")
+    .trim();
+  return `-----BEGIN PUBLIC KEY-----\n${cleaned}\n-----END PUBLIC KEY-----`;
+}
 export async function POST(request: NextRequest) {
   try {
     const headers = request.headers;
@@ -41,10 +48,8 @@ export async function POST(request: NextRequest) {
     const stringToSign = stringToSignArr.join(":");
 
     console.log(stringToSign);
-    const base64Key = process.env.BASE64_PUBLIC_KEY!;
-    console.log("Base64 Public Key: ", base64Key);
 
-    const publicKey = Buffer.from(base64Key, "base64").toString("utf-8");
+    const publicKey = base64ToPEMPublicKey(process.env.BASE64_PUBLIC_KEY!);
 
     console.log("Public Key:", publicKey);
     console.log(stringToSign);
