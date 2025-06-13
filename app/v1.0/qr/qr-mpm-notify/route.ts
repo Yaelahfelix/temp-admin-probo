@@ -49,7 +49,12 @@ export async function POST(request: NextRequest) {
 
     console.log(stringToSign);
 
-    const publicKey = base64ToPEMPublicKey(process.env.BASE64_PUBLIC_KEY!);
+    const publicKey = `-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCEQMj6S4fW3ePLnwYd32cBcHV4
+yaTRFxWziGltZ7N60ubAvETscFxhdtNolud3jeAZd2o+OgrT8tlOITqkXjl3VwSs
+UKbm4p9q6steQH5G/CgHIAvf0bOPm100K7jkEWdbS/mT+Y2mMkcCnqo8DmzRuJ/T
+uacarRYO0vNhjy5AnwIDAQAB
+-----END PUBLIC KEY-----`;
 
     console.log("Public Key:", publicKey);
     console.log(stringToSign);
