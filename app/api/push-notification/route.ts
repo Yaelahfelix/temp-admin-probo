@@ -24,7 +24,9 @@ export async function POST(req: NextRequest) {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
-        "content-type": "application/json",
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
       },
     });
     return NextResponse.json({

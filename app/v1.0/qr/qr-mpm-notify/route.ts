@@ -4,19 +4,14 @@ import fs from "fs";
 import db from "@/lib/db";
 import { RowDataPacket } from "mysql2";
 import path from "path";
-function base64ToPEMPublicKey(base64Key: string) {
-  const decoded = Buffer.from(base64Key, "base64").toString("utf8");
-  const cleaned = decoded
-    .replace(/-----(BEGIN|END)( RSA)? PUBLIC KEY-----/g, "")
-    .trim();
-  return `-----BEGIN PUBLIC KEY-----\n${cleaned}\n-----END PUBLIC KEY-----`;
-}
+
 export async function POST(request: NextRequest) {
   try {
     const headers = request.headers;
     console.log(headers);
-    const timestamp = headers.get("X-Timestamp");
-    const signature = headers.get("X-Signature");
+    const timestamp = "2025-06-12T18:50:11+07:00";
+    const signature =
+      "AMI53C6eITovGyD4zAU1jHvP/y1RqYvnIoTuCglBTbXEUeFx6jqE4TtUPhJ8dmmUDOE2gDgEqUMcjsokNI19+J6bQtntil67FQ0YLm7FmBD1bGaZPrEOaPYH3ufe5JPFH/5cDwYImgwTZm5GaE7fUlYxkboJyMxm2HId11ZMA4k=";
     const partnerId = headers.get("X-Partner-ID");
 
     console.log("Timestamp: ", timestamp);
@@ -37,27 +32,23 @@ export async function POST(request: NextRequest) {
     const url = "/v1.0/qr/qr-mpm-notify";
     const httpMethod = "POST";
 
-    console.log(body);
     const payload = JSON.stringify(body);
     const stringToSignArr = [
       httpMethod,
       url,
-      crypto.createHash("sha256").update(payload).digest("hex").toLowerCase(),
+      crypto
+        .createHash("sha256")
+        .update(payload)
+        .digest()
+        .toString("hex")
+        .toLowerCase(),
       timestamp,
     ];
     const stringToSign = stringToSignArr.join(":");
 
-    console.log(stringToSign);
+    const base64Key = process.env.BASE64_PUBLIC_KEY!;
+    const publicKey = Buffer.from(base64Key, "base64");
 
-    const publicKey = `-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCEQMj6S4fW3ePLnwYd32cBcHV4
-yaTRFxWziGltZ7N60ubAvETscFxhdtNolud3jeAZd2o+OgrT8tlOITqkXjl3VwSs
-UKbm4p9q6steQH5G/CgHIAvf0bOPm100K7jkEWdbS/mT+Y2mMkcCnqo8DmzRuJ/T
-uacarRYO0vNhjy5AnwIDAQAB
------END PUBLIC KEY-----`;
-
-    console.log("Public Key:", publicKey);
-    console.log(stringToSign);
     const verify = crypto
       .createVerify("sha256")
       .update(stringToSign)
