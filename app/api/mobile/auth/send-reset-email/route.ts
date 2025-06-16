@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
   const { email } = await req.json();
 
   try {
-    // Create reset tokens table if not exists
     await db.execute(`
       CREATE TABLE IF NOT EXISTS password_reset_tokens (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -38,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     if (rows.length === 0) {
       return NextResponse.json(
-        { error: "Email tidak ditemukan" },
+        { message: "Email tidak ditemukan" },
         { status: 404 }
       );
     }

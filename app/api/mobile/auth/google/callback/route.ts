@@ -131,7 +131,7 @@ export async function GET(req: NextRequest) {
       };
     } else {
       // User sudah ada
-      userId = existingUser.id;
+      userId = existingUser.id as any;
       const existingSession = await checkSessionUserId(userId);
 
       if (existingSession.session === null) {
