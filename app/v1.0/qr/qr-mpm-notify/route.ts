@@ -11,11 +11,8 @@ export async function POST(request: NextRequest) {
     const headers = request.headers;
     console.log(headers);
 
-    // const timestamp = headers.get("X-Timestamp");
-    const timestamp = "2025-06-16T20:59:37+07:00";
-    // const signature = headers.get("X-Signature");
-    const signature =
-      "BQ67XBtPJKBP2f9pq48njp1ZaF1GL8b620MIXHkj2NBpQBF3r+6LGu9mkdavMRueRvSoeNo+I9OaxUpfYmZTJQeWzmHKgtceJbO8A8GqIKbyuYy+G9CQD0TJIpaw6K7V52KOszZf3y3GmkaRauu9SUCQcMau/TQYwjPPVdv5gak=";
+    const timestamp = headers.get("X-Timestamp");
+    const signature = headers.get("X-Signature");
     const partnerId = headers.get("X-Partner-ID");
     let user_id;
 
@@ -33,21 +30,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // const body = await request.json();
-    const body = {
-      originalReferenceNo: "119445",
-      originalPartnerReferenceNo: "INV-250616-MXHIMB",
-      latestTransactionStatus: "00",
-      amount: { value: "92500.00", currency: "IDR" },
-      additionalInfo: {
-        channel: "QRIS",
-        contractId: "qr8baac16b-ecff-42a9-b105-e045622bb842",
-        brandName: "DANA",
-        rrn: "922514877152",
-        buyerRef: "PDAM Probolinggo",
-        terminalId: null,
-      },
-    };
+    const body = await request.json();
+    // const body = {
+    //   originalReferenceNo: "119445",
+    //   originalPartnerReferenceNo: "INV-250616-MXHIMB",
+    //   latestTransactionStatus: "00",
+    //   amount: { value: "92500.00", currency: "IDR" },
+    //   additionalInfo: {
+    //     channel: "QRIS",
+    //     contractId: "qr8baac16b-ecff-42a9-b105-e045622bb842",
+    //     brandName: "DANA",
+    //     rrn: "922514877152",
+    //     buyerRef: "PDAM Probolinggo",
+    //     terminalId: null,
+    //   },
+    // };
 
     console.log(body);
     const url = "/v1.0/qr/qr-mpm-notify";
