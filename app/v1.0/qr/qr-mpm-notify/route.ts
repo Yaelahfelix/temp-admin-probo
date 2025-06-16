@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log(body);
     const url = "/v1.0/qr/qr-mpm-notify";
     const httpMethod = "POST";
 
@@ -47,7 +48,8 @@ export async function POST(request: NextRequest) {
     const stringToSign = stringToSignArr.join(":");
 
     const base64Key = process.env.BASE64_PUBLIC_KEY!;
-    const publicKey = Buffer.from(base64Key, "base64");
+    const publicKey = Buffer.from(base64Key, "base64").toString("utf-8");
+    console.log(publicKey);
 
     const verify = crypto
       .createVerify("sha256")
