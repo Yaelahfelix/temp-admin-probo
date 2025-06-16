@@ -9,9 +9,9 @@ export async function POST(request: NextRequest) {
   try {
     const headers = request.headers;
     console.log(headers);
-    const timestamp = "2025-06-12T18:50:11+07:00";
-    const signature =
-      "AMI53C6eITovGyD4zAU1jHvP/y1RqYvnIoTuCglBTbXEUeFx6jqE4TtUPhJ8dmmUDOE2gDgEqUMcjsokNI19+J6bQtntil67FQ0YLm7FmBD1bGaZPrEOaPYH3ufe5JPFH/5cDwYImgwTZm5GaE7fUlYxkboJyMxm2HId11ZMA4k=";
+
+    const timestamp = headers.get("X-Timestamp");
+    const signature = headers.get("X-Signature");
     const partnerId = headers.get("X-Partner-ID");
 
     console.log("Timestamp: ", timestamp);
