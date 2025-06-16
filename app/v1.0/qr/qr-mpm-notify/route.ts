@@ -144,12 +144,7 @@ export async function POST(request: NextRequest) {
 
           await Promise.all(
             tagihan_array.map(async (tagihan: any) => {
-              const periode = tagihan.periode;
-              const nopel = transaction.no_pelanggan;
-
               console.log(`Processing tagihan for id: ${tagihan.id}}`);
-
-              const tglSkrg = format(new Date(), "yyyy-MM-dd HH:mm:ss");
 
               const [drdRows] = await db.execute<RowDataPacket[]>(
                 "SELECT * FROM drd WHERE id = ?",
@@ -158,7 +153,7 @@ export async function POST(request: NextRequest) {
 
               const drd = drdRows.length > 0 ? drdRows[0] : null;
 
-              if (drd && drd.flaglunas === "1") {
+              if (drd && drd.flaglunas == 1) {
                 console.log(`Double payment detected for id: ${tagihan.id}`);
 
                 // await db.execute("UPDATE drd SET nolpp = ? WHERE kode = ?", [
