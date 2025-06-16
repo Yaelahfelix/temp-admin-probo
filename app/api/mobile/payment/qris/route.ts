@@ -84,13 +84,16 @@ export async function POST(request: NextRequest) {
     );
     const tagihanBlmLunas = tagihanRes[0].map((tagihan: any) => {
       return {
+        id: tagihan.id,
         no_pelanggan: tagihan.no_pelanggan,
-        periode: tagihan.periode,
-        total: Number(tagihan.totalrek),
-        dendatunggakan: tagihan.dendatunggakan,
+        periode: tagihan.periode_rek,
+        total: tagihan.totalrek,
+        denda1: tagihan.denda1,
+        denda2: tagihan.denda2,
+        materai: tagihan.materai,
+        // dendatunggakan: tagihan.dendatunggakan,
       };
     });
-    console.log(tagihanBlmLunas);
 
     const totalTagihan = tagihanBlmLunas.reduce(
       (sum: any, tagihan: any) => sum + Number(tagihan.total),
@@ -136,7 +139,6 @@ export async function POST(request: NextRequest) {
 
     const privateKey = Buffer.from(base64Key, "base64");
 
-    // Validasi environment variables
     if (!partnerId || !externalId || !channelId) {
       return NextResponse.json(
         { message: "Missing required environment variables" },
