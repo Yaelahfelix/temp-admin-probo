@@ -132,37 +132,21 @@ export async function GET(req: NextRequest) {
     } else {
       // User sudah ada
       userId = existingUser.id as any;
-      const existingSession = await checkSessionUserId(userId);
 
-      if (existingSession.session === null) {
-        // Buat session baru
-        const sessionToken = generateSessionToken();
-        const newSession = await createSession(sessionToken, userId);
+      const sessionToken = generateSessionToken();
+      const newSession = await createSession(sessionToken, userId);
 
-        session = {
-          session: { ...newSession, token: sessionToken },
-          user: {
-            id: userId,
-            nama: name,
-            email: email,
-            alamat: existingUser.alamat || "",
-            nomor_telepon: existingUser.nomor_telepon || "",
-            image: picture,
-          },
-        };
-      } else {
-        session = {
-          session: existingSession.session,
-          user: {
-            id: userId,
-            nama: name,
-            email: email,
-            alamat: existingUser.alamat || "",
-            nomor_telepon: existingUser.nomor_telepon || "",
-            image: picture,
-          },
-        };
-      }
+      session = {
+        session: { ...newSession, token: sessionToken },
+        user: {
+          id: userId,
+          nama: name,
+          email: email,
+          alamat: existingUser.alamat || "",
+          nomor_telepon: existingUser.nomor_telepon || "",
+          image: picture,
+        },
+      };
     }
 
     // Redirect ke mobile app dengan parameter yang diperlukan
