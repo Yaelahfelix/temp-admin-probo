@@ -55,16 +55,6 @@ export async function GET(request: NextRequest) {
       result = rows;
     }
 
-    if (result.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Not Found",
-        },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(result, { status: 200 });
   } catch (error: any) {
     console.error(error);
