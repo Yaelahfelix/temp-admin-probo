@@ -109,8 +109,8 @@ export async function GET(req: NextRequest) {
 
     if (!existingUser) {
       const [insertResult]: any = await db.execute(
-        `INSERT INTO web_public_user (email, nama, password, provider, provider_id, nomor_telepon, image, alamat) 
-         VALUES (?, ?, '', 'google', ?, '', ?, '')`,
+        `INSERT INTO web_public_user (email, nama, password, provider, provider_id, image, alamat) 
+         VALUES (?, ?, '', 'google', ?, ?, '')`,
         [email, name, sub, picture]
       );
 
@@ -149,7 +149,6 @@ export async function GET(req: NextRequest) {
       };
     }
 
-    // Redirect ke mobile app dengan parameter yang diperlukan
     const redirectUrl = `${URL_REDIRECT_MOBILE}?token=${session.session.token}&nama=${encodeURIComponent(session.user.nama)}&email=${encodeURIComponent(session.user.email)}`;
 
     return NextResponse.redirect(redirectUrl);
