@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
                   loketData?.kodeloket,
                   Number(tagihan.denda1) + Number(tagihan.denda2),
                   tagihan.materai,
-                  tagihan.totalrek,
+                  tagihan.totalrekening,
                   tagihan.id,
                 ]);
               }

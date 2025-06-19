@@ -5,5 +5,6 @@ export interface MobileUser {
   image: string;
   password: string;
   alamat: string;
+  provider?: string;
   nomor_telepon: string;
 }

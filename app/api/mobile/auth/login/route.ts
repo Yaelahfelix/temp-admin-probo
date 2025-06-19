@@ -7,17 +7,11 @@ import { MobileUser } from "@/types/mobile";
 import { encodeHexLowerCase } from "@oslojs/encoding";
 import { sha256 } from "@oslojs/crypto/sha2";
 import { verifyApiSecret } from "@/lib/verifyApiSecret";
+import validator from "validator";
 
-// Helper function untuk mendeteksi apakah input adalah email
-function isEmail(value: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(value);
-}
-
-// Function untuk get user berdasarkan email
 async function getUserFromEmail(email: string): Promise<MobileUser | null> {
   const [data]: any = await db.query(
-    "SELECT a.id, a.email, a.nama, a.image, a.password, a.alamat, a.nomor_telepon FROM web_public_user a WHERE a.email = ?",
+    "SELECT a.id, a.email, a.nama, a.image, a.password, a.alamat, a.nomor_telepon, a.provider FROM web_public_user a WHERE a.email = ?",
     [email]
   );
   if (data.length === 0) {
@@ -32,11 +26,11 @@ async function getUserFromEmail(email: string): Promise<MobileUser | null> {
     nomor_telepon: data[0].nomor_telepon,
     alamat: data[0].alamat,
     password: data[0].password,
+    provider: data[0].provider,
   };
   return user;
 }
 
-// Function untuk get user berdasarkan nomor telepon
 async function getUserFromPhone(
   nomor_telepon: string
 ): Promise<MobileUser | null> {
@@ -64,7 +58,7 @@ async function getUserFromPhone(
 async function getUserFromEmailOrPhone(
   emailOrPhone: string
 ): Promise<MobileUser | null> {
-  if (isEmail(emailOrPhone)) {
+  if (validator.isEmail(emailOrPhone)) {
     return await getUserFromEmail(emailOrPhone);
   } else {
     return await getUserFromPhone(emailOrPhone);
@@ -117,6 +111,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { message: "Email/nomor telepon atau password salah" },
         { status: 404 }
+      );
+    }
+
+    console.log(user);
+    if (
+      validator.isEmail(user.email) &&
+      user.provider === "google" &&
+      !user.password
+    ) {
+      return NextResponse.json(
+        {
+          message:
+            "Pengguna ini masuk lewat google dan tidak ada password yang tersimpan!",
+        },
+        { status: 401 }
       );
     }
 
