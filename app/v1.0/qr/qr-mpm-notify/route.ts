@@ -168,6 +168,12 @@ export async function POST(request: NextRequest) {
               } else {
                 console.log(`Processing normal payment for id: ${tagihan.id}`);
 
+                const [rowsDrd] = await db.query<RowDataPacket[]>(
+                  "select id, denda1, denda2, totalrek, materai from drd where id = ?",
+                  [tagihan.id]
+                );
+                const drd = rowsDrd[0];
+
                 const updateQuery = `
         UPDATE sipamit_billing.drd 
         SET 
@@ -194,10 +200,10 @@ export async function POST(request: NextRequest) {
                   userAkses?.username || "mkr",
                   loketData?.id,
                   loketData?.kodeloket,
-                  Number(tagihan.denda1) + Number(tagihan.denda2),
-                  tagihan.materai,
-                  tagihan.totalrekening,
-                  tagihan.id,
+                  Number(drd.denda1) + Number(drd.denda2),
+                  drd.materai,
+                  drd.totalrekening,
+                  drd.id,
                 ]);
               }
             })
