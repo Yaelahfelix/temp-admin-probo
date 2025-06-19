@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
                 console.log(`Processing normal payment for id: ${tagihan.id}`);
 
                 const [rowsDrd] = await db.query<RowDataPacket[]>(
-                  "select id, denda1, denda2, totalrek, materai from drd where id = ?",
+                  "select id, denda1, denda2, totalrekening, materai from drd where id = ?",
                   [tagihan.id]
                 );
                 const drd = rowsDrd[0];
