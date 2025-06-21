@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const queryUser = `SELECT id, password FROM web_admin_user WHERE id = ?`;
+    const queryUser = `SELECT id, password FROM web_public_user WHERE id = ?`;
     const [users] = await db.query<RowDataPacket[]>(queryUser, [session.id]);
 
     if (users.length === 0) {
@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    const updateQuery = `UPDATE web_admin_user SET password = ? WHERE id = ?`;
+    const updateQuery = `UPDATE web_public_user SET password = ? WHERE id = ?`;
     await db.query(updateQuery, [hashedPassword, session.id]);
 
     return NextResponse.json({
